@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ProductService } from './services/product.service';
 import { ProductCategoryMenu } from './conmponents/product-category-menu/product-category-menu';
 import { SearchComponent } from './conmponents/search/search.component';
+import { ProductDetailsComponent } from './conmponents/product-details/product-details.component';
 
 @Component({
   selector: 'app-root',
