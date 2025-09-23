@@ -6,7 +6,7 @@ import { ProductService } from './services/product.service';
 import { ProductCategoryMenu } from './conmponents/product-category-menu/product-category-menu';
 import { SearchComponent } from './conmponents/search/search.component';
 import { ProductDetailsComponent } from './conmponents/product-details/product-details.component';
-
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -15,6 +15,7 @@ import { ProductDetailsComponent } from './conmponents/product-details/product-d
     ProductListComponent,
     ProductCategoryMenu,
     SearchComponent,
+    NgbModule,
     HttpClientModule,
     RouterModule,
   ],
