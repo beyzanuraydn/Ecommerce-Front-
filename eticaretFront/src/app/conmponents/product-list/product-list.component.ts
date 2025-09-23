@@ -21,6 +21,8 @@ export class ProductListComponent implements OnInit {
   thePageSize: number = 4;
   theTotalElements: number = 0;
 
+  previousKeyword: string = '';
+
   constructor(private productService: ProductService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
@@ -31,16 +33,31 @@ export class ProductListComponent implements OnInit {
   listProducts() {
     this.searchMode = this.route.snapshot.paramMap.has('keyword');
     if (this.searchMode) {
-      this.handleSearchProduct();
+      this.handleSearchProducts();
     } else {
       this.handleListProducts();
     }
   }
-  handleSearchProduct() {
+  handleSearchProducts() {
     const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
-    this.productService.searchProducts(theKeyword).subscribe((data) => {
-      this.products = data;
-    });
+
+    if (this.previousKeyword != theKeyword) {
+      this.thePageNumber = 1;
+    }
+
+    this.previousKeyword = theKeyword;
+
+    this.productService
+      .searchProductPaginate(this.thePageNumber - 1, this.thePageSize, theKeyword)
+      .subscribe(this.processResult());
+  }
+  processResult() {
+    return (data: any) => {
+      this.products = data._embedded.products;
+      this.thePageNumber = data.page.number + 1;
+      this.thePageSize = data.page.size;
+      this.theTotalElements = data.page.totalElements;
+    };
   }
   handleListProducts() {
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
@@ -57,12 +74,7 @@ export class ProductListComponent implements OnInit {
 
     this.productService
       .getProductListPaginate(this.thePageNumber - 1, this.thePageSize, this.currentCategoryId)
-      .subscribe((data) => {
-        this.products = data._embedded.products;
-        this.thePageNumber = data.page.number + 1;
-        this.thePageSize = data.page.size;
-        this.theTotalElements = data.page.totalElements;
-      });
+      .subscribe(this.processResult());
   }
   updatePageSize(pageSize: string) {
     this.thePageSize = +pageSize;
