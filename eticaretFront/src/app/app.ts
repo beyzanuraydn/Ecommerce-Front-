@@ -7,11 +7,13 @@ import { ProductCategoryMenu } from './conmponents/product-category-menu/product
 import { SearchComponent } from './conmponents/search/search.component';
 import { ProductDetailsComponent } from './conmponents/product-details/product-details.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CartStatusComponent } from './conmponents/cart-status/cart-status.component';
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     RouterOutlet,
+    CartStatusComponent,
     ProductListComponent,
     ProductCategoryMenu,
     SearchComponent,

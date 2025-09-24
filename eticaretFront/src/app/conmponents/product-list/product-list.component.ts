@@ -4,6 +4,8 @@ import { ProductService } from '../../services/product.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CartService } from '../../services/cart.service';
+import { CartItem } from '../../common/cart-item';
 @Component({
   selector: 'app-product-list',
   imports: [RouterModule, CommonModule, NgbModule],
@@ -23,7 +25,11 @@ export class ProductListComponent implements OnInit {
 
   previousKeyword: string = '';
 
-  constructor(private productService: ProductService, private route: ActivatedRoute) {}
+  constructor(
+    private productService: ProductService,
+    private route: ActivatedRoute,
+    private cartService: CartService
+  ) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(() => {
@@ -51,14 +57,7 @@ export class ProductListComponent implements OnInit {
       .searchProductPaginate(this.thePageNumber - 1, this.thePageSize, theKeyword)
       .subscribe(this.processResult());
   }
-  processResult() {
-    return (data: any) => {
-      this.products = data._embedded.products;
-      this.thePageNumber = data.page.number + 1;
-      this.thePageSize = data.page.size;
-      this.theTotalElements = data.page.totalElements;
-    };
-  }
+
   handleListProducts() {
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
 
@@ -80,5 +79,17 @@ export class ProductListComponent implements OnInit {
     this.thePageSize = +pageSize;
     this.thePageNumber = 1;
     this.listProducts();
+  }
+  processResult() {
+    return (data: any) => {
+      this.products = data._embedded.products;
+      this.thePageNumber = data.page.number + 1;
+      this.thePageSize = data.page.size;
+      this.theTotalElements = data.page.totalElements;
+    };
+  }
+  addToCart(theProduct: Product) {
+    const theCartItem = new CartItem(theProduct);
+    this.cartService.addToCart(theCartItem);
   }
 }

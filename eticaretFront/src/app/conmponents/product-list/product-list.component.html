@@ -11,7 +11,9 @@
               <h1>{{ product.name }}</h1></a
             >
             <div class="price">{{ product.unitPrice | currency : 'TL' }}</div>
-            <a href="#" class="primary-btn">Sepete Ekle</a>
+            <button (click)="addToCart(product)" class="btn btn-secondary btn-sm">
+              Sepete Ekle
+            </button>
           </div>
         </div>
 
