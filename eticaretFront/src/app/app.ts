@@ -8,6 +8,7 @@ import { SearchComponent } from './conmponents/search/search.component';
 import { ProductDetailsComponent } from './conmponents/product-details/product-details.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CartStatusComponent } from './conmponents/cart-status/cart-status.component';
+import { FormService } from './services/form.service';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -23,7 +24,7 @@ import { CartStatusComponent } from './conmponents/cart-status/cart-status.compo
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  providers: [ProductService],
+  providers: [ProductService, FormService],
 })
 export class App {
   protected readonly title = signal('eticaretFront');

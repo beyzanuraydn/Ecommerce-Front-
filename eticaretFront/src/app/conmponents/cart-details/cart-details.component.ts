@@ -3,7 +3,6 @@ import { CartItem } from '../../common/cart-item';
 import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
 @Component({
   selector: 'app-cart-details',
   standalone: true,
@@ -13,16 +12,13 @@ import { RouterModule } from '@angular/router';
 })
 export class CartDetailsComponent {
   cartItems: CartItem[] = [];
-
   totalPrice: number = 0;
   totalQuantity: number = 0;
-
   constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
     this.listCartDetails();
   }
-
   listCartDetails() {
     this.cartItems = this.cartService.cartItems;
 
