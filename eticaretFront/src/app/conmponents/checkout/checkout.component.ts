@@ -13,6 +13,12 @@ import { Country } from '../../common/country';
 import { HttpClientModule } from '@angular/common/http';
 import { State } from '../../common/state';
 import { KValidators } from '../../validators/Kvalidators';
+import { CartService } from '../../services/cart.service';
+import { CheckoutService } from '../../services/checkout.service';
+import { Router } from '@angular/router';
+import { Order } from '../../common/order';
+import { OrderItem } from '../../common/order-item';
+import { Purchase } from '../../common/purchase';
 
 @Component({
   selector: 'app-checkout',
@@ -34,9 +40,16 @@ export class CheckoutComponent {
   shippingAddressStates: State[] = [];
   billingAddressStates: State[] = [];
 
-  constructor(private formBuilder: FormBuilder, private formService: FormService) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private formService: FormService,
+    private cartService: CartService,
+    private checkoutService: CheckoutService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
+    this.reviewCartDetails();
     this.checkoutFromGroup = this.formBuilder.group({
       customer: this.formBuilder.group({
         firstName: [
@@ -152,14 +165,64 @@ export class CheckoutComponent {
   get creditCardSecurityCode() {
     return this.checkoutFromGroup?.get('creditCard.securityCode');
   }
+  reviewCartDetails() {
+    this.cartService.totalQuantity.subscribe(
+      (totalQuantity) => (this.totalQuantity = totalQuantity)
+    );
+    this.cartService.totalPrice.subscribe((totalPrice) => (this.totalPrice = totalPrice));
+  }
 
   onSubmit() {
     console.log('Butona basildi');
 
     if (this.checkoutFromGroup?.invalid) {
       this.checkoutFromGroup.markAllAsTouched();
+      return;
     }
+
+    let order = new Order();
+    order.totalPrice = this.totalPrice;
+    order.totalQuantity = this.totalQuantity;
+
+    const cartItems = this.cartService.cartItems;
+    let orderItems: OrderItem[] = cartItems.map((tempCartItem) => new OrderItem(tempCartItem));
+    let purchase = new Purchase();
+    purchase.customer = this.checkoutFromGroup?.controls['customer'].value;
+    purchase.shippingAddress = this.checkoutFromGroup?.controls['shippingAddress'].value;
+    const shippingState: State = JSON.parse(JSON.stringify(purchase.shippingAddress?.state));
+    const shippingCountry: Country = JSON.parse(JSON.stringify(purchase.shippingAddress?.country));
+    if (purchase.shippingAddress) {
+      purchase.shippingAddress.state = shippingState.name;
+      purchase.shippingAddress.country = shippingCountry.name;
+    }
+
+    purchase.billingAddress = this.checkoutFromGroup?.controls['billingAddress'].value;
+    const billingState: State = JSON.parse(JSON.stringify(purchase.shippingAddress?.state));
+    const billingCountry: Country = JSON.parse(JSON.stringify(purchase.shippingAddress?.country));
+    if (purchase.billingAddress) {
+      purchase.billingAddress.state = billingState.name;
+      purchase.billingAddress.country = billingCountry.name;
+    }
+    purchase.order = order;
+    purchase.orderItems = orderItems;
+    this.checkoutService.placeOrder(purchase).subscribe({
+      next: (response) => {
+        alert(`Siparişiniz alınmıştır.\nSipariş takip numarası: ${response.orderTrackingNumber}`);
+
+        this.resetCart();
+      },
+      error: (err) => {
+        alert(`Bir hata mevcut: ${err.message}`);
+      },
+    });
     console.log(this.checkoutFromGroup?.get('customer')?.value);
+  }
+  resetCart() {
+    this.cartService.cartItems = [];
+    this.cartService.totalPrice.next(0);
+    this.cartService.totalQuantity.next(0);
+    this.checkoutFromGroup?.reset();
+    this.router.navigateByUrl('/products');
   }
   copyShippingAddressToBillingAddress(event: any) {
     if (event.target.checked) {

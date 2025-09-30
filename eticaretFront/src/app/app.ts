@@ -9,6 +9,7 @@ import { ProductDetailsComponent } from './conmponents/product-details/product-d
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CartStatusComponent } from './conmponents/cart-status/cart-status.component';
 import { FormService } from './services/form.service';
+import { CheckoutService } from './services/checkout.service';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -24,7 +25,7 @@ import { FormService } from './services/form.service';
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  providers: [ProductService, FormService],
+  providers: [ProductService, FormService, CheckoutService],
 })
 export class App {
   protected readonly title = signal('eticaretFront');
