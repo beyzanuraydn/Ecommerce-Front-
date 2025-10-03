@@ -13,7 +13,10 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "esnext", // 👈 değiştir
+    "moduleResolution": "node", // 👈 ekle
+    "allowSyntheticDefaultImports": true, // 👈 ekle
+    "esModuleInterop": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
